@@ -1,0 +1,28 @@
+{
+  "name": "miaweb",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sitio de Mía Hilados migrado a Next.js para deploy en Vercel.",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "format": "prettier --write \"*.{html,md,json}\" \"app/**/*.{ts,tsx,css}\" \"components/**/*.{ts,tsx}\" \"lib/**/*.ts\" \"css/**/*.css\" \"public/js/**/*.js\"",
+    "check:format": "prettier --check \"*.{html,md,json}\" \"app/**/*.{ts,tsx,css}\" \"components/**/*.{ts,tsx}\" \"lib/**/*.ts\" \"css/**/*.css\" \"public/js/**/*.js\""
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "prettier": "^3.3.3",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "next": "^16.2.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  }
+}

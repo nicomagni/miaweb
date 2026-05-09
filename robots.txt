@@ -1,0 +1,41 @@
+# robots.txt — Mía Hilados
+# Bots legítimos (Google, Bing, etc.) pueden indexar todo
+User-agent: *
+Allow: /
+Crawl-delay: 5
+
+# Scrapers y bots agresivos conocidos — bloqueados completamente
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+User-agent: serpstatbot
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+Sitemap: https://www.miahilados.com.ar/sitemap.xml
