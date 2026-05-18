@@ -2,65 +2,8 @@
   "use strict";
   let e=[];
   (function initLocales(){
-    function parseMiaCsv(t){
-      var LF=String.fromCharCode(10),CR=String.fromCharCode(13);
-      var rows=t.trim().split(LF);
-      var rawH=rows[0].split(",");
-      var h=rawH.map(function(k){
-        var s=k.charCodeAt(0)===34?k.slice(1):k;
-        return s.charCodeAt(s.length-1)===34?s.slice(0,-1):s;
-
-      });
-      return rows.slice(1).map(function(row,idx){
-        row=row.replace(CR,"");
-        var vals=[],cur="",inQ=false;
-        for(var i=0;
-        i<row.length;
-        i++){
-          var ch=row[i];
-          if(ch===String.fromCharCode(34)&&!inQ){
-            inQ=true;
-
-          }
-          else if(ch===String.fromCharCode(34)&&inQ&&row[i+1]===String.fromCharCode(34)){
-            cur+=String.fromCharCode(34);
-            i++;
-
-          }
-          else if(ch===String.fromCharCode(34)&&inQ){
-            inQ=false;
-
-          }
-          else if(ch===","&&!inQ){
-            vals.push(cur);
-            cur="";
-
-          }
-          else{
-            cur+=ch;
-
-          }
-
-        }
-        vals.push(cur);
-        var o={
-          id:idx+1
-        };
-        h.forEach(function(k,i){
-          var v=vals[i]||"";
-          o[k]=k==="lat"||k==="lng"?parseFloat(v):k==="mayorista"?v.toUpperCase()==="TRUE":v;
-
-        });
-        return o;
-
-      });
-
-    }
-    var SHEET_URL="https://docs.google.com/spreadsheets/d/1GdNRXLbg47r0ILCDar3Va2wg05Lph9qnm3nps3iK0sM/gviz/tq?tqx=out:csv&gid=158831744";
-    fetch(SHEET_URL).then(function(r){
-      return r.text()
-    }).then(function(t){
-      e=parseMiaCsv(t);
+    function bootstrapLocales(t){
+      e=t;
       v&&[].concat.apply([],[...new Set(e.map(function(x){
         return x.provincia
       }))].sort()).forEach(function(prov){
@@ -93,7 +36,7 @@
             e.forEach(e=>{
               const c=L.marker([e.lat,e.lng],{
                 icon:makeIcon(e.mayorista)
-              }).addTo(n).bindPopup(`<div class="map-popup">${e.mayorista?'<span class="map-popup__mayorista">★ Mayorista</span>':""}<div class="map-popup__name">${e.nombre}</div><div class="map-popup__loc">${e.ciudad}, ${e.provincia}</div>${e.dir?`<div class="map-popup__dir">${
+              }).addTo(n).bindPopup(`<div class="map-popup">${e.image?`<img class="map-popup__image" src="${e.image}" alt="${e.nombre}">`:""}${e.mayorista?'<span class="map-popup__mayorista">★ Mayorista</span>':""}<div class="map-popup__name">${e.nombre}</div><div class="map-popup__loc">${e.ciudad}, ${e.provincia}</div>${e.dir?`<div class="map-popup__dir">${
                 e.dir
               }
               </div>`:""}${e.telefono?`<a class="map-popup__tel" href="tel:${e.telefono}" style="display:block;margin:4px 0;color:var(--red);text-decoration:none;font-size:13px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> ${
@@ -107,10 +50,8 @@
         },document.head.appendChild(O)
       })();
 
-    }).catch(function(err){
-      console.warn("Mia Hilados: no se pudo cargar locales",err);
-
-    });
+    }
+    Array.isArray(window.__MIA_PROVIDERS__)?bootstrapLocales(window.__MIA_PROVIDERS__):console.warn("Mia Hilados: no se recibieron proveedores desde la app.");
 
   })();
   function tc(s){
@@ -1488,7 +1429,13 @@
             }]
           }],c="images/catalogo hilados/",n={
             oxford:c+"carta oxford.webp","aries-ovillos":c+"carta aries ovillos.webp","aries-madejas":c+"carta aries.webp",cake:c+"carta cake 2024.webp",camila:c+"carta camila.webp",amanda:c+"carta amanda.webp",amelie:c+"carta amelie.webp",austral:c+"carta austral.webp",brill:c+"carta brill.webp",bruma:c+"carta bruma.webp","cotton-8-6":c+"carta 8-6_8-3.webp","cotton-sense":c+"carta cotton.webp",flower:c+"flower-madeja2021 (2) (1).webp",fresh:c+"carta fresh.webp",glam:c+"glamcarta.webp",kiko:c+"carta kiko.webp",mandala:c+"carta mandala 2026.webp",matice:c+"carta matice.webp",milano:c+"carta milano.webp",niky:c+"carta niky 2026.webp",nordico:c+"carta nordico.webp",pampa:c+"carta pampa 2026.webp",peluche:c+"carta peluche.webp",plush:c+"carta plush.webp",sheep:c+"carta sheep.webp",viscolan:c+"carta viscolan.webp",c47:c+"carta classic 4_7.webp",matizadas:c+"4-7madejas carta.webp",cottonlux:c+"cotton lux carta.webp"
-          },a=document.getElementById("colecTabs"),A=document.getElementById("colecImg"),o=document.getElementById("colecBadge"),O=document.getElementById("colecHeading"),m=document.getElementById("colecDescEl"),t=document.getElementById("colecColorName"),r=document.getElementById("colecSwatches"),b=document.getElementById("colecCount"),d=0,E=0,s=null,g=document.getElementById("tabsArrowPrev"),l=document.getElementById("tabsArrowNext");
+          };
+          Array.isArray(window.__MIA_COLLECTIONS__)&&window.__MIA_COLLECTIONS__.length&&(i=window.__MIA_COLLECTIONS__,n=Object.fromEntries(window.__MIA_COLLECTIONS__.filter(function(e){
+            return e.carta
+          }).map(function(e){
+            return[e.id,e.carta]
+          })));
+          var a=document.getElementById("colecTabs"),A=document.getElementById("colecImg"),o=document.getElementById("colecBadge"),O=document.getElementById("colecHeading"),m=document.getElementById("colecDescEl"),t=document.getElementById("colecColorName"),r=document.getElementById("colecSwatches"),b=document.getElementById("colecCount"),d=0,E=0,s=null,g=document.getElementById("tabsArrowPrev"),l=document.getElementById("tabsArrowNext");
           g&&g.addEventListener("click",function(){
             a.scrollBy({
               left:-220,behavior:"smooth"
@@ -1598,11 +1545,13 @@
   }),document.addEventListener("click",e=>{
     l.contains(e.target)||(l.classList.remove("is-open"),g.hidden=!0)
   });
-  const p={
+  const k={
+    comercio:"storeName",cuit:"cuit",mayoristaEmail:"email",provincia:"province",ciudad:"city",instagram:"instagram",web:"website",volumen:"estimatedVolume",mensaje:"message"
+  },p={
     comercio:e=>e.trim().length>=2?"":"Ingresá el nombre del comercio.",cuit:e=>{
       const i=e.replace(/\D/g,"");
       return 11!==i.length?"El CUIT debe tener 11 dígitos.":["20","23","24","25","26","27","30","33","34"].includes(i.substring(0,2))?"":"Prefijo inválido."
-    },provincia:e=>e?"":"Seleccioná una provincia.",ciudad:e=>e.trim().length>=2?"":"Ingresá la ciudad.",instagram:e=>e.trim().length>=2?"":"Ingresá Instagram.",volumen:e=>e?"":"Seleccioná el volumen."
+    },mayoristaEmail:e=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim())?"":"Ingresá un email válido.",provincia:e=>e?"":"Seleccioná una provincia.",ciudad:e=>e.trim().length>=2?"":"Ingresá la ciudad.",instagram:e=>e.trim().length>=2?"":"Ingresá Instagram.",volumen:e=>e?"":"Seleccioná el volumen."
   },R=i("#cuit");
   R&&R.addEventListener("input",e=>{
     let i=e.target.value.replace(/\D/g,"").slice(0,11);
@@ -1621,6 +1570,18 @@
       const c=i(`#${e}`);
       return c&&c.value.trim()&&!p[e](c.value)
     }))
+  }
+  function j(e,c){
+    const n=i(`#${e}`),a=i(`#${e}Error`);
+    n&&(n.classList.remove("is-valid"),n.classList.add("is-invalid")),a&&(a.textContent=c||"Revisá este campo.")
+  }
+  function H(e){
+    if(!e||!e.errors||!e.errors.fieldErrors)return;
+    const c=e.errors.fieldErrors;
+    Object.keys(k).forEach(function(e){
+      var n=k[e],a=c[n];
+      a&&a[0]&&j(e,a[0])
+    })
   }
   M&&S&&M.addEventListener("change",()=>{
     S.disabled=M.checked,M.checked&&(S.value="",S.classList.remove("is-invalid"))
@@ -1649,19 +1610,32 @@
       const e=a.querySelector(".btn__text");
       e&&(e.textContent="Enviando...")
     }
-    fetch("https://api.web3forms.com/submit",{
+    fetch("/api/wholesale-applications",{
       method:"POST",body:new FormData(N)
+    }).then(async e=>{
+      if(e.ok)return e.json();
+      let c=null;
+      try{
+        c=await e.json()
+      }catch{}
+      throw c||new Error("No se pudo enviar la solicitud.")
     }).then(()=>{
       N.style.display="none",i("#formSuccess").hidden=!1
-    }).catch(()=>{
-      N.style.display="none",i("#formSuccess").hidden=!1
+    }).catch(e=>{
+      H(e),alert(e&&e.errors?"Revisá los campos marcados e intentá nuevamente.":"No se pudo enviar la solicitud. Intentá nuevamente en unos minutos.")
+    }).finally(()=>{
+      if(a){
+        a.disabled=!1;
+        const e=a.querySelector(".btn__text");
+        e&&(e.textContent="Enviar Solicitud")
+      }
     })
   });
   const u=i("#contactForm");
   let T=null,D=0;
   function U(i){
     A=i,c(".dist-card").forEach(e=>{
-      const c=parseInt(e.dataset.id)===i;
+      const c=e.dataset.id===String(i);
       e.classList.toggle("is-active",c),c&&e.scrollIntoView({
         behavior:"smooth",block:"nearest"
       })
@@ -1680,7 +1654,7 @@
       n.className="dist-card",n.dataset.id=e.id;
       const a=`https://www.google.com/maps/dir/?api=1&destination=${e.lat},${e.lng}`,A=e.mayorista?'<span class="dist-card__badge dist-card__badge--mayorista">Mayorista</span>':'<span class="dist-card__badge">Distribuidor</span>',o=e.dir?`<div class="dist-card__dir"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${e.dir}</div>`:"",O=e.telefono?`<a class="dist-card__link dist-card__link--wa" href="https://wa.me/${e.telefono}?text=Hola!" target="_blank" rel="noopener"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>WhatsApp</a>`:"";
       var W=e.web?`<a class="dist-card__link" href="${e.web}" target="_blank" rel="noopener"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>Web</a>`:"";
-      n.innerHTML=`<div class="dist-card__header"><span class="dist-card__name">${e.nombre}</span>${A}</div><div class="dist-card__loc">${e.ciudad}, ${e.provincia}</div>${o}<div class="dist-card__actions">${O}${W}<a class="dist-card__link dist-card__link--maps" href="${a}" target="_blank" rel="noopener"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Cómo llegar</a>${i}</div>`,n.addEventListener("click",i=>{
+      n.innerHTML=`<div class="dist-card__top">${e.image?`<img class="dist-card__image" src="${e.image}" alt="${e.nombre}">`:""}<div class="dist-card__top-copy"><div class="dist-card__header"><span class="dist-card__name">${e.nombre}</span>${A}</div><div class="dist-card__loc">${e.ciudad}, ${e.provincia}</div>${o}</div></div><div class="dist-card__actions">${O}${W}<a class="dist-card__link dist-card__link--maps" href="${a}" target="_blank" rel="noopener"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Cómo llegar</a>${i}</div>`,n.addEventListener("click",i=>{
         i.target.closest("a")||U(e.id)
       }),c.appendChild(n)
     }):c.innerHTML='<div style="padding:2rem;text-align:center;color:var(--gray-400)"><p>No se encontraron distribuidores.</p></div>')
@@ -1691,9 +1665,9 @@
     if(i-D<6e4)return void alert("Por favor esperá un momento antes de volver a enviar.");
     D=i;
     const c=u.querySelector('button[type="submit"] .btn__text'),n=u.querySelector('button[type="submit"]');
-    c&&(c.textContent="Enviando..."),n&&(n.disabled=!0),fetch("https://api.web3forms.com/submit",{
+    c&&(c.textContent="Enviando..."),n&&(n.disabled=!0),fetch("/api/contact-messages",{
       method:"POST",body:new FormData(u)
-    }).then(()=>{
+    }).then(e=>e.ok?e.json():Promise.reject(e)).then(()=>{
       c&&(c.textContent="¡Mensaje enviado!"),n&&(n.style.background="#2d8a4e"),clearTimeout(T),T=setTimeout(()=>{
         u.reset(),c&&(c.textContent="Enviar mensaje"),n&&(n.disabled=!1,n.style.background="")
       },3e3)

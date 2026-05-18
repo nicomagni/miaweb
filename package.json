@@ -10,6 +10,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:deploy": "drizzle-kit migrate",
+    "db:check": "drizzle-kit check",
+    "db:studio": "drizzle-kit studio",
+    "db:pull": "drizzle-kit pull",
+    "db:seed:legacy:providers": "node scripts/generate-legacy-seed-sql.mjs providers",
+    "db:seed:legacy:collections": "node scripts/generate-legacy-seed-sql.mjs collections",
+    "db:backfill:collection-media": "node scripts/backfill-collection-media.mjs",
+    "db:backfill:provider-default-image": "node scripts/backfill-provider-default-image.mjs",
     "format": "prettier --write \"*.{html,md,json}\" \"app/**/*.{ts,tsx,css}\" \"components/**/*.{ts,tsx}\" \"lib/**/*.ts\" \"css/**/*.css\" \"public/js/**/*.js\"",
     "check:format": "prettier --check \"*.{html,md,json}\" \"app/**/*.{ts,tsx,css}\" \"components/**/*.{ts,tsx}\" \"lib/**/*.ts\" \"css/**/*.css\" \"public/js/**/*.js\""
   },
@@ -17,12 +26,19 @@
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.31.10",
     "prettier": "^3.3.3",
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@clerk/nextjs": "^7.3.3",
+    "@supabase/supabase-js": "^2.105.4",
+    "drizzle-orm": "^0.45.2",
     "next": "^16.2.0",
+    "postgres": "^3.4.9",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "zod": "^4.4.3"
   }
 }

@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import Script from "next/script";
+import { getPublishedCollectionsForPublic } from "@/lib/public-collections";
+import { getPublicProviders } from "@/lib/public-providers";
 import { loadLegacyHtml } from "@/lib/legacy-html";
 
 const siteUrl = "https://www.miahilados.com.ar";
@@ -142,8 +145,22 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
+export default async function HomePage() {
   const homeBody = loadLegacyHtml("home-body.html");
+  let publicCollections: Awaited<ReturnType<typeof getPublishedCollectionsForPublic>> = [];
+  let publicProviders: Awaited<ReturnType<typeof getPublicProviders>> = [];
+
+  try {
+    publicCollections = await getPublishedCollectionsForPublic();
+  } catch {
+    publicCollections = [];
+  }
+
+  try {
+    publicProviders = await getPublicProviders();
+  } catch {
+    publicProviders = [];
+  }
 
   return (
     <>
@@ -152,8 +169,22 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <div suppressHydrationWarning dangerouslySetInnerHTML={{ __html: homeBody }} />
-      <script src="/js/main.js" defer />
-      <script src="/js/ui-enhancements.js" defer />
+      <Script
+        id="mia-collections-data"
+        strategy="beforeInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `window.__MIA_COLLECTIONS__ = ${JSON.stringify(publicCollections)};`,
+        }}
+      />
+      <Script
+        id="mia-providers-data"
+        strategy="beforeInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `window.__MIA_PROVIDERS__ = ${JSON.stringify(publicProviders)};`,
+        }}
+      />
+      <Script src="/js/main.js" strategy="afterInteractive" />
+      <Script src="/js/ui-enhancements.js" strategy="afterInteractive" />
     </>
   );
 }

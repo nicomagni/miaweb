@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Cormorant_Garamond, Montserrat } from "next/font/google";
+import { AuthControls } from "@/components/auth-controls";
 import "./globals.css";
 
 const siteUrl = "https://www.miahilados.com.ar";
@@ -51,7 +53,12 @@ export default function RootLayout({
       <head>
         <link rel="preload" as="image" href="/images/banner-principal.webp" fetchPriority="high" />
       </head>
-      <body className={`${montserrat.variable} ${cormorantGaramond.variable}`}>{children}</body>
+      <body className={`${montserrat.variable} ${cormorantGaramond.variable}`}>
+        <ClerkProvider>
+          <AuthControls />
+          {children}
+        </ClerkProvider>
+      </body>
     </html>
   );
 }
