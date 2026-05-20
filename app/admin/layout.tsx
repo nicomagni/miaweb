@@ -1,17 +1,48 @@
+import { ClerkProvider } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
+import { eq } from "drizzle-orm";
+import { redirect } from "next/navigation";
 import { AdminHeader } from "@/components/admin/admin-header";
-import { requireAdmin } from "@/lib/auth/admin";
+import { AuthControls } from "@/components/auth-controls";
+import { adminUsers } from "@/db/schema";
+import { getDb } from "@/lib/db/client";
 
 export default async function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const adminUser = await requireAdmin();
+  const { userId } = await auth();
+
+  if (!userId) {
+    return (
+      <ClerkProvider>
+        <main className="admin-auth">
+          <section className="admin-card admin-card--narrow admin-auth__card">
+            <p className="admin-eyebrow">Admin</p>
+            <h1>Acceso interno</h1>
+            <p>Ingresá con tu cuenta o creá una nueva para solicitar acceso al panel.</p>
+            <AuthControls />
+          </section>
+        </main>
+      </ClerkProvider>
+    );
+  }
+
+  const adminUser = await getDb().query.adminUsers.findFirst({
+    where: eq(adminUsers.clerkUserId, userId),
+  });
+
+  if (!adminUser || !adminUser.isActive) {
+    redirect("/403");
+  }
 
   return (
-    <div className="admin-shell">
-      <AdminHeader email={adminUser.email} role={adminUser.role} />
-      <main className="admin-main">{children}</main>
-    </div>
+    <ClerkProvider>
+      <div className="admin-shell">
+        <AdminHeader email={adminUser.email} role={adminUser.role} />
+        <main className="admin-main">{children}</main>
+      </div>
+    </ClerkProvider>
   );
 }

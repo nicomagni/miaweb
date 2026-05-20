@@ -7,10 +7,7 @@
 }
 
 .auth-controls {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  z-index: 1200;
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -77,9 +74,6 @@
 
 @media (max-width: 640px) {
   .auth-controls {
-    top: 0.75rem;
-    right: 0.75rem;
-    left: 0.75rem;
     justify-content: center;
     border-radius: 24px;
   }
@@ -198,6 +192,7 @@
 }
 
 .auth-page,
+.admin-auth,
 .admin-shell--centered {
   min-height: 100vh;
   display: grid;
@@ -206,6 +201,15 @@
   background:
     radial-gradient(circle at top, rgba(218, 41, 28, 0.12), transparent 32%),
     linear-gradient(180deg, #f7f3f1 0%, #ffffff 100%);
+}
+
+.admin-auth__card {
+  text-align: center;
+}
+
+.admin-auth__card .auth-controls {
+  margin-top: 1.5rem;
+  justify-content: center;
 }
 
 .admin-shell {

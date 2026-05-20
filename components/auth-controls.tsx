@@ -1,3 +1,5 @@
+"use client";
+
 import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 
 export function AuthControls() {

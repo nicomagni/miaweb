@@ -86,6 +86,10 @@ const structuredData = {
   ],
 };
 
+function serializeJsonLd(data: unknown) {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
 export const metadata: Metadata = {
   title: "Mía Hilados — Hilados Premium para Tejido y Crochet | Argentina",
   description:
@@ -147,6 +151,9 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
   const homeBody = loadLegacyHtml("home-body.html");
+  const homeHtml = `<script id="mia-structured-data" type="application/ld+json">${serializeJsonLd(
+    structuredData,
+  )}</script>${homeBody}`;
   let publicCollections: Awaited<ReturnType<typeof getPublishedCollectionsForPublic>> = [];
   let publicProviders: Awaited<ReturnType<typeof getPublicProviders>> = [];
 
@@ -164,11 +171,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-      <div suppressHydrationWarning dangerouslySetInnerHTML={{ __html: homeBody }} />
+      <div suppressHydrationWarning dangerouslySetInnerHTML={{ __html: homeHtml }} />
       <Script
         id="mia-collections-data"
         strategy="beforeInteractive"

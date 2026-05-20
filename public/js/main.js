@@ -1,6 +1,8 @@
 !function(){
   "use strict";
   let e=[];
+  const i=(e,i=document)=>i.querySelector(e),c=(e,i=document)=>[...i.querySelectorAll(e)];
+  const v=document.querySelector("#filterProvincia"),B=document.querySelector("#filterCiudad"),h=document.querySelector("#geolocateBtn");
   (function initLocales(){
     function bootstrapLocales(t){
       e=t;
@@ -59,7 +61,6 @@
       return w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()
     }).join(" ")
   }
-  const i=(e,i=document)=>i.querySelector(e),c=(e,i=document)=>[...i.querySelectorAll(e)];
   let n,a=[],A=null,o=null,O=0,m=!1;
   window.addEventListener("load",()=>{
     setTimeout(()=>{
@@ -1677,7 +1678,6 @@
       },3e3)
     })
   });
-  const v=i("#filterProvincia"),B=i("#filterCiudad"),h=i("#geolocateBtn");
   function V(){
     let i=[...e];
     v&&v.value&&(i=i.filter(e=>e.provincia===v.value)),B&&B.value&&(i=i.filter(e=>e.ciudad===B.value)),o&&(i=i.map(e=>({
