@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Montserrat } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const siteUrl = "https://www.miahilados.com.ar";
@@ -48,7 +49,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es-AR">
-      <body className={`${montserrat.variable} ${cormorantGaramond.variable}`}>{children}</body>
+      <body className={`${montserrat.variable} ${cormorantGaramond.variable}`}>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
