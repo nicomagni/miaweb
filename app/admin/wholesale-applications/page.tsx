@@ -6,7 +6,7 @@ import { getDb } from "@/lib/db/client";
 import { convertApplicationToProviderAction } from "./actions";
 
 const statusTabs = [
-  { value: "", label: "Todas" },
+  { value: "all", label: "Todas" },
   { value: "new", label: "Nuevas" },
   { value: "reviewing", label: "En revisión" },
   { value: "contacted", label: "Contactadas" },
@@ -17,7 +17,7 @@ const statusTabs = [
 
 function buildInboxHref(status: string, q: string) {
   const search = new URLSearchParams();
-  if (status) search.set("status", status);
+  if (status && status !== "new") search.set("status", status);
   if (q) search.set("q", q);
   const qs = search.toString();
   return qs ? `/admin/wholesale-applications?${qs}` : "/admin/wholesale-applications";
@@ -39,7 +39,8 @@ export default async function WholesaleApplicationsPage({
   await requireAdmin({ roles: ["superadmin", "sales"] });
   const params = await searchParams;
   const q = (params.q ?? "").trim();
-  const status = (params.status ?? "").trim();
+  const rawStatus = (params.status ?? "new").trim();
+  const status = rawStatus === "" ? "new" : rawStatus;
   const filters = [];
 
   if (q) {
@@ -53,7 +54,7 @@ export default async function WholesaleApplicationsPage({
     );
   }
 
-  if (status) {
+  if (status !== "all") {
     filters.push(
       eq(wholesaleApplications.status, status as typeof wholesaleApplications.$inferSelect.status),
     );
@@ -87,8 +88,8 @@ export default async function WholesaleApplicationsPage({
     : [];
   const convertedMap = new Map(
     convertedRows
-      .filter(
-        (row): row is { sourceApplicationId: string; id: string } => Boolean(row.sourceApplicationId),
+      .filter((row): row is { sourceApplicationId: string; id: string } =>
+        Boolean(row.sourceApplicationId),
       )
       .map((row) => [row.sourceApplicationId, row.id]),
   );
@@ -102,7 +103,7 @@ export default async function WholesaleApplicationsPage({
       <div className="admin-status-tabs" role="tablist" aria-label="Estados de solicitudes">
         {statusTabs.map((tab) => {
           const isActive = status === tab.value;
-          const count = tab.value ? (statusCounts.get(tab.value) ?? 0) : totalCount;
+          const count = tab.value === "all" ? totalCount : (statusCounts.get(tab.value) ?? 0);
           return (
             <Link
               key={tab.label}
@@ -129,6 +130,7 @@ export default async function WholesaleApplicationsPage({
               <th>Comercio</th>
               <th>Ubicación</th>
               <th>Email</th>
+              <th>Volumen</th>
               <th>Estado</th>
               <th>Creada</th>
               <th>Actualizada</th>
@@ -143,6 +145,7 @@ export default async function WholesaleApplicationsPage({
                   {application.city}, {application.province}
                 </td>
                 <td>{application.email}</td>
+                <td>{application.estimatedVolume || "-"}</td>
                 <td>{application.status}</td>
                 <td>{formatDate(application.createdAt)}</td>
                 <td>{formatDate(application.updatedAt)}</td>

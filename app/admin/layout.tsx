@@ -2,7 +2,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { AdminHeader } from "@/components/admin/admin-header";
+import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AuthControls } from "@/components/auth-controls";
 import { adminUsers } from "@/db/schema";
 import { getDb } from "@/lib/db/client";
@@ -40,7 +40,7 @@ export default async function AdminLayout({
   return (
     <ClerkProvider>
       <div className="admin-shell">
-        <AdminHeader email={adminUser.email} role={adminUser.role} />
+        <AdminSidebar email={adminUser.email} role={adminUser.role} />
         <main className="admin-main">{children}</main>
       </div>
     </ClerkProvider>

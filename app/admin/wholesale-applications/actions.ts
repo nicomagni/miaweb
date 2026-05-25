@@ -27,6 +27,7 @@ export async function updateWholesaleApplicationAction(formData: FormData) {
 
   revalidatePath("/admin/wholesale-applications");
   revalidatePath(`/admin/wholesale-applications/${id}`);
+  redirect("/admin/wholesale-applications");
 }
 
 export async function convertApplicationToProviderAction(formData: FormData) {
