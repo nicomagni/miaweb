@@ -190,3 +190,42 @@ export const auditLogs = pgTable("audit_logs", {
   summary: jsonb("summary").notNull().default({}),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+export const mcpOauthClients = pgTable("mcp_oauth_clients", {
+  clientId: text("client_id").primaryKey(),
+  clientSecretHash: text("client_secret_hash"),
+  redirectUris: jsonb("redirect_uris").$type<string[]>().notNull(),
+  clientName: text("client_name"),
+  tokenEndpointAuthMethod: text("token_endpoint_auth_method").notNull().default("none"),
+  metadata: jsonb("metadata").$type<Record<string, unknown>>().notNull().default({}),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const mcpOauthAuthorizationCodes = pgTable("mcp_oauth_authorization_codes", {
+  codeHash: text("code_hash").primaryKey(),
+  clientId: text("client_id")
+    .notNull()
+    .references(() => mcpOauthClients.clientId, { onDelete: "cascade" }),
+  redirectUri: text("redirect_uri").notNull(),
+  codeChallenge: text("code_challenge").notNull(),
+  scopes: text("scopes").notNull().default(""),
+  resource: text("resource"),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  usedAt: timestamp("used_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const mcpOauthTokens = pgTable("mcp_oauth_tokens", {
+  tokenHash: text("token_hash").primaryKey(),
+  refreshTokenHash: text("refresh_token_hash").unique(),
+  clientId: text("client_id")
+    .notNull()
+    .references(() => mcpOauthClients.clientId, { onDelete: "cascade" }),
+  scopes: text("scopes").notNull().default(""),
+  resource: text("resource"),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  refreshExpiresAt: timestamp("refresh_expires_at", { withTimezone: true }),
+  revokedAt: timestamp("revoked_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
