@@ -4,3 +4,6 @@ dist/
 .vite/
 .next/
 out/
+.env.local
+*.local
+.env.local
