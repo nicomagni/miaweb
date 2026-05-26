@@ -1,4 +1,26 @@
 (function () {
+  function loadHeroVideo() {
+    var video = document.querySelector(".hero__video");
+    if (!video || video.dataset.loaded === "true") return;
+    var source = video.querySelector("source[data-src]");
+    if (!source) return;
+    source.src = source.dataset.src;
+    video.dataset.loaded = "true";
+    video.load();
+    var playPromise = video.play();
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(function () {});
+    }
+  }
+
+  window.addEventListener("load", function () {
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(loadHeroVideo, { timeout: 2500 });
+      return;
+    }
+    window.setTimeout(loadHeroVideo, 1800);
+  });
+
   document.addEventListener("DOMContentLoaded", function () {
     var colecTabs = document.getElementById("colecTabs");
     var colecImg = document.getElementById("colecImg");

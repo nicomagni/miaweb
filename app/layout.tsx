@@ -50,6 +50,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es-AR">
+      <head>
+        <link
+          rel="preload"
+          href="/images/banner-principal-lcp.webp"
+          as="image"
+          fetchPriority="high"
+        />
+      </head>
       <body className={`${montserrat.variable} ${cormorantGaramond.variable}`}>
         {children}
         <Analytics />
