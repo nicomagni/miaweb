@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { desc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { mediaAssets, providers } from "@/db/schema";
 import { MediaPicker } from "@/components/admin/media-picker";
 import { requireAdmin } from "@/lib/auth/admin";
@@ -7,27 +7,12 @@ import { getDb } from "@/lib/db/client";
 import { getStoragePublicUrl } from "@/lib/media/url";
 import { updateProviderAction } from "../actions";
 
-export default async function ProviderDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function ProviderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin({ roles: ["superadmin", "sales"] });
   const { id } = await params;
   const provider = await getDb().query.providers.findFirst({
     where: eq(providers.id, id),
   });
-  const assetOptions = await getDb()
-    .select({
-      id: mediaAssets.id,
-      title: mediaAssets.title,
-      fileName: mediaAssets.fileName,
-      kind: mediaAssets.kind,
-      bucket: mediaAssets.bucket,
-      objectPath: mediaAssets.objectPath,
-    })
-    .from(mediaAssets)
-    .orderBy(desc(mediaAssets.createdAt));
 
   if (!provider) {
     return (
@@ -37,7 +22,11 @@ export default async function ProviderDetailPage({
     );
   }
 
-  const selectedImageAsset = assetOptions.find((asset) => asset.id === provider.imageAssetId);
+  const selectedImageAsset = provider.imageAssetId
+    ? await getDb().query.mediaAssets.findFirst({
+        where: eq(mediaAssets.id, provider.imageAssetId),
+      })
+    : null;
   const selectedImageUrl = selectedImageAsset
     ? getStoragePublicUrl({
         bucket: selectedImageAsset.bucket,
@@ -79,7 +68,7 @@ export default async function ProviderDetailPage({
           <span>Asset imagen</span>
           <MediaPicker
             name="imageAssetId"
-            assets={assetOptions}
+            defaultAsset={selectedImageAsset}
             defaultValue={provider.imageAssetId}
             allowedKinds={["general", "provider-image"]}
           />

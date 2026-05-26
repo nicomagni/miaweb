@@ -96,7 +96,7 @@ async function ensureDefaultProviderAsset() {
 async function main() {
   const assetId = await ensureDefaultProviderAsset();
   const updated = await sql`
-    update wholesalers
+    update providers
     set
       image_asset_id = ${assetId},
       updated_at = now()

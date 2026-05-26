@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { and, asc, eq, ilike } from "drizzle-orm";
 import { MediaPicker } from "@/components/admin/media-picker";
-import { collections, mediaAssets } from "@/db/schema";
+import { collections } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth/admin";
 import { getDb } from "@/lib/db/client";
 import { createCollectionAction } from "./actions";
@@ -18,24 +18,14 @@ export default async function CollectionsPage({
   const filters = [];
 
   if (q) filters.push(ilike(collections.name, `%${q}%`));
-  if (status) filters.push(eq(collections.status, status as typeof collections.$inferSelect.status));
+  if (status)
+    filters.push(eq(collections.status, status as typeof collections.$inferSelect.status));
 
   const rows = await getDb()
     .select()
     .from(collections)
     .where(filters.length ? and(...filters) : undefined)
     .orderBy(asc(collections.sortOrder), asc(collections.name));
-  const assetOptions = await getDb()
-    .select({
-      id: mediaAssets.id,
-      title: mediaAssets.title,
-      fileName: mediaAssets.fileName,
-      kind: mediaAssets.kind,
-      bucket: mediaAssets.bucket,
-      objectPath: mediaAssets.objectPath,
-    })
-    .from(mediaAssets)
-    .orderBy(asc(mediaAssets.kind), asc(mediaAssets.fileName));
 
   return (
     <div className="admin-stack">
@@ -68,17 +58,12 @@ export default async function CollectionsPage({
           </label>
           <label className="admin-field">
             <span>Asset portada</span>
-            <MediaPicker
-              name="coverImageAssetId"
-              assets={assetOptions}
-              allowedKinds={["general", "collection-cover"]}
-            />
+            <MediaPicker name="coverImageAssetId" allowedKinds={["general", "collection-cover"]} />
           </label>
           <label className="admin-field">
             <span>Asset carta de colores</span>
             <MediaPicker
               name="colorCardAssetId"
-              assets={assetOptions}
               allowedKinds={["general", "collection-color-card"]}
             />
           </label>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, inArray } from "drizzle-orm";
 import { collectionItems, collections, mediaAssets } from "@/db/schema";
 import { MediaPicker } from "@/components/admin/media-picker";
 import { requireAdmin } from "@/lib/auth/admin";
@@ -36,17 +36,22 @@ export default async function CollectionDetailPage({
     .from(collectionItems)
     .where(eq(collectionItems.collectionId, collection.id))
     .orderBy(asc(collectionItems.sortOrder), asc(collectionItems.name));
-  const assetOptions = await db
-    .select({
-      id: mediaAssets.id,
-      title: mediaAssets.title,
-      fileName: mediaAssets.fileName,
-      kind: mediaAssets.kind,
-      bucket: mediaAssets.bucket,
-      objectPath: mediaAssets.objectPath,
-    })
-    .from(mediaAssets)
-    .orderBy(asc(mediaAssets.kind), asc(mediaAssets.fileName));
+  const selectedAssetIds = [collection.coverImageAssetId, collection.colorCardAssetId].filter(
+    (assetId): assetId is string => Boolean(assetId),
+  );
+  const assetOptions = selectedAssetIds.length
+    ? await db
+        .select({
+          id: mediaAssets.id,
+          title: mediaAssets.title,
+          fileName: mediaAssets.fileName,
+          kind: mediaAssets.kind,
+          bucket: mediaAssets.bucket,
+          objectPath: mediaAssets.objectPath,
+        })
+        .from(mediaAssets)
+        .where(inArray(mediaAssets.id, selectedAssetIds))
+    : [];
   const assetMap = new Map(assetOptions.map((asset) => [asset.id, asset]));
   const coverAsset = assetMap.get(collection.coverImageAssetId ?? "");
   const colorCardAsset = assetMap.get(collection.colorCardAssetId ?? "");
@@ -116,13 +121,17 @@ export default async function CollectionDetailPage({
           </label>
           <label className="admin-field admin-field--full">
             <span>Descripción</span>
-            <textarea name="longDescription" rows={4} defaultValue={collection.longDescription ?? ""} />
+            <textarea
+              name="longDescription"
+              rows={4}
+              defaultValue={collection.longDescription ?? ""}
+            />
           </label>
           <label className="admin-field">
             <span>Asset portada</span>
             <MediaPicker
               name="coverImageAssetId"
-              assets={assetOptions}
+              defaultAsset={coverAsset}
               defaultValue={collection.coverImageAssetId}
               allowedKinds={["general", "collection-cover"]}
             />
@@ -134,7 +143,7 @@ export default async function CollectionDetailPage({
             <span>Asset carta de colores</span>
             <MediaPicker
               name="colorCardAssetId"
-              assets={assetOptions}
+              defaultAsset={colorCardAsset}
               defaultValue={collection.colorCardAssetId}
               allowedKinds={["general", "collection-color-card"]}
             />
@@ -190,11 +199,7 @@ export default async function CollectionDetailPage({
           </label>
           <label className="admin-field admin-field--full">
             <span>Asset imagen</span>
-            <MediaPicker
-              name="imageAssetId"
-              assets={assetOptions}
-              allowedKinds={["general", "collection-item"]}
-            />
+            <MediaPicker name="imageAssetId" allowedKinds={["general", "collection-item"]} />
             <Link href="/admin/media" className="admin-link-inline">
               Abrir media library
             </Link>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { getStoragePublicUrl } from "@/lib/media/url";
 
 type MediaPickerAsset = {
@@ -14,40 +14,73 @@ type MediaPickerAsset = {
 
 type MediaPickerProps = {
   name: string;
-  assets: MediaPickerAsset[];
+  defaultAsset?: MediaPickerAsset | null;
   defaultValue?: string | null;
   allowedKinds?: string[];
   emptyLabel?: string;
 };
 
-function buildSearchText(asset: MediaPickerAsset) {
-  return `${asset.title ?? ""} ${asset.fileName} ${asset.kind}`.toLowerCase();
-}
-
 export function MediaPicker({
   name,
-  assets,
+  defaultAsset = null,
   defaultValue = "",
   allowedKinds,
   emptyLabel = "Sin asset",
 }: MediaPickerProps) {
   const [selectedId, setSelectedId] = useState(defaultValue || "");
+  const [selectedAsset, setSelectedAsset] = useState<MediaPickerAsset | null>(defaultAsset);
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [results, setResults] = useState<MediaPickerAsset[]>([]);
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const inputId = useId();
-  const visibleAssets = assets.filter((asset) =>
-    allowedKinds?.length ? allowedKinds.includes(asset.kind) : true,
-  );
-  const filteredAssets = visibleAssets.filter((asset) =>
-    query ? buildSearchText(asset).includes(query.trim().toLowerCase()) : true,
-  );
-  const selectedAsset = visibleAssets.find((asset) => asset.id === selectedId) ?? null;
   const selectedImageUrl = selectedAsset
     ? getStoragePublicUrl({
         bucket: selectedAsset.bucket,
         objectPath: selectedAsset.objectPath,
       })
     : "";
+  const normalizedQuery = query.trim();
+  const canSearch = normalizedQuery.length >= 2;
+
+  useEffect(() => {
+    if (!isOpen || !canSearch) {
+      setResults([]);
+      setStatus("idle");
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(async () => {
+      const searchParams = new URLSearchParams({ q: normalizedQuery });
+      allowedKinds?.forEach((kind) => searchParams.append("kind", kind));
+      setStatus("loading");
+
+      try {
+        const response = await fetch(`/api/admin/media/search?${searchParams.toString()}`, {
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error("Media search failed");
+        }
+
+        const payload = (await response.json()) as { assets?: MediaPickerAsset[] };
+        setResults(payload.assets ?? []);
+        setStatus("idle");
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setResults([]);
+          setStatus("error");
+        }
+      }
+    }, 250);
+
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [allowedKinds, canSearch, isOpen, normalizedQuery]);
 
   return (
     <div className="admin-media-picker">
@@ -85,7 +118,10 @@ export function MediaPicker({
           <button
             type="button"
             className="admin-link-inline admin-link-inline--danger"
-            onClick={() => setSelectedId("")}
+            onClick={() => {
+              setSelectedId("");
+              setSelectedAsset(null);
+            }}
           >
             Limpiar
           </button>
@@ -99,48 +135,59 @@ export function MediaPicker({
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Buscar por nombre, archivo o tipo"
+              placeholder="Buscar por nombre"
               className="admin-media-picker__search"
             />
-            <span className="admin-media-picker__count">{filteredAssets.length} assets</span>
+            <span className="admin-media-picker__count">
+              {canSearch ? `${results.length} resultados` : "mín. 2 caracteres"}
+            </span>
           </div>
 
-          <div className="admin-media-picker__grid">
-            {filteredAssets.map((asset) => {
-              const imageUrl = getStoragePublicUrl({
-                bucket: asset.bucket,
-                objectPath: asset.objectPath,
-              });
-              const isSelected = asset.id === selectedId;
+          {!canSearch ? (
+            <p className="admin-media-picker__message">
+              Escribí al menos 2 caracteres para buscar assets.
+            </p>
+          ) : null}
 
-              return (
-                <button
-                  key={asset.id}
-                  type="button"
-                  className={`admin-media-picker__card${isSelected ? " is-selected" : ""}`}
-                  onClick={() => {
-                    setSelectedId(asset.id);
-                    setIsOpen(false);
-                  }}
-                >
-                  {imageUrl ? (
-                    <img
-                      src={imageUrl}
-                      alt={asset.title || asset.fileName}
-                      className="admin-media-picker__card-image"
-                    />
-                  ) : (
-                    <div className="admin-media-picker__card-placeholder">Privado</div>
-                  )}
-                  <div className="admin-media-picker__card-body">
-                    <strong>{asset.title || asset.fileName}</strong>
-                    <span>{asset.kind}</span>
-                    <small>{asset.fileName}</small>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+          {status === "loading" ? (
+            <p className="admin-media-picker__message">Buscando assets...</p>
+          ) : null}
+
+          {status === "error" ? (
+            <p className="admin-media-picker__message">No se pudo buscar assets.</p>
+          ) : null}
+
+          {canSearch && status === "idle" ? (
+            <div className="admin-media-picker__grid admin-media-picker__grid--compact">
+              {results.map((asset) => {
+                const isSelected = asset.id === selectedId;
+
+                return (
+                  <button
+                    key={asset.id}
+                    type="button"
+                    className={`admin-media-picker__card admin-media-picker__card--compact${
+                      isSelected ? " is-selected" : ""
+                    }`}
+                    onClick={() => {
+                      setSelectedId(asset.id);
+                      setSelectedAsset(asset);
+                      setIsOpen(false);
+                    }}
+                  >
+                    <div className="admin-media-picker__card-body">
+                      <strong>{asset.title || asset.fileName}</strong>
+                      <span>{asset.kind}</span>
+                      <small>{asset.fileName}</small>
+                    </div>
+                  </button>
+                );
+              })}
+              {results.length === 0 ? (
+                <p className="admin-media-picker__message">No hay resultados para esa búsqueda.</p>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>

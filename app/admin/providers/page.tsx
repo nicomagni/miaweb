@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { and, desc, eq, ilike, or } from "drizzle-orm";
-import { mediaAssets, providers } from "@/db/schema";
+import { providers } from "@/db/schema";
 import { MediaPicker } from "@/components/admin/media-picker";
 import { requireAdmin } from "@/lib/auth/admin";
 import { getDb } from "@/lib/db/client";
@@ -42,17 +42,6 @@ export default async function ProvidersPage({
     .from(providers)
     .where(filters.length ? and(...filters) : undefined)
     .orderBy(desc(providers.createdAt));
-  const assetOptions = await getDb()
-    .select({
-      id: mediaAssets.id,
-      title: mediaAssets.title,
-      fileName: mediaAssets.fileName,
-      kind: mediaAssets.kind,
-      bucket: mediaAssets.bucket,
-      objectPath: mediaAssets.objectPath,
-    })
-    .from(mediaAssets)
-    .orderBy(desc(mediaAssets.createdAt));
 
   return (
     <div className="admin-stack">
@@ -76,11 +65,7 @@ export default async function ProvidersPage({
           </label>
           <label className="admin-field">
             <span>Asset imagen</span>
-            <MediaPicker
-              name="imageAssetId"
-              assets={assetOptions}
-              allowedKinds={["general", "provider-image"]}
-            />
+            <MediaPicker name="imageAssetId" allowedKinds={["general", "provider-image"]} />
             <Link href="/admin/media" className="admin-link-inline">
               Abrir media library
             </Link>
