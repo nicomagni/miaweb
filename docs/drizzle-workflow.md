@@ -74,12 +74,24 @@ DATABASE_URL="postgresql://..." npm run db:migrate:deploy
 
 ## Vercel
 
-Recomendación:
+Vercel usa `vercel.json` con este build command:
 
-- Vercel deploya la app
-- las migraciones se aplican fuera de Vercel, de forma manual o por CI
+```bash
+npm run vercel:build
+```
 
-No recomendaría depender del build de Vercel para correr migraciones de esquema.
+Ese script ejecuta:
+
+```bash
+npm run db:migrate:deploy && next build
+```
+
+Reglas:
+
+- `DATABASE_URL` debe estar configurada en Vercel para cada entorno que vaya a deployar.
+- las migraciones se aplican antes del build de Next;
+- Drizzle registra qué migraciones ya corrieron en `public.__drizzle_migrations`, por lo que no vuelve a aplicar una migración ya ejecutada;
+- si una migración falla, el deploy debe fallar y no publicar una build contra un schema desactualizado.
 
 ## Convención recomendada
 
@@ -99,8 +111,8 @@ npm run dev
 ### En otros entornos
 
 ```bash
-npm run build
 DATABASE_URL="postgresql://..." npm run db:migrate:deploy
+npm run build
 ```
 
 ## Supabase
