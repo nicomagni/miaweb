@@ -41,6 +41,7 @@ export function AdminSidebar({ email, role }: AdminSidebarProps) {
             <Link
               key={link.href}
               href={link.href}
+              prefetch={false}
               className={`admin-sidebar__link${isActive ? " is-active" : ""}`}
             >
               {link.label}

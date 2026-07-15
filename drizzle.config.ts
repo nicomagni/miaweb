@@ -11,7 +11,11 @@ for (const file of [".env.local", ".env"]) {
   }
 }
 
-const databaseUrl = process.env.DATABASE_URL;
+const databaseUrl =
+  process.env.DATABASE_URL ??
+  process.env.POSTGRES_URL_NON_POOLING ??
+  process.env.POSTGRES_URL ??
+  process.env.POSTGRES_PRISMA_URL;
 const fallbackDatabaseUrl = "postgres://postgres:postgres@127.0.0.1:5432/postgres";
 
 export default defineConfig({

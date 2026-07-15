@@ -5,7 +5,8 @@ type MediaUrlRef = {
 
 function toPublicPath(path: string | null | undefined) {
   if (!path) return "";
-  if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("/")) return path;
+  if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("/"))
+    return path;
   return `/${path.replace(/^\/+/, "")}`;
 }
 
@@ -17,6 +18,11 @@ function encodeObjectPath(path: string) {
     .join("/");
 }
 
+function getLegacyPublicPath(ref: MediaUrlRef) {
+  if (ref.bucket !== "site-public" || !ref.objectPath?.startsWith("legacy/")) return "";
+  return toPublicPath(ref.objectPath.replace(/^legacy\/+/, ""));
+}
+
 export function getStoragePublicUrl(ref: MediaUrlRef) {
   if (!ref.bucket || !ref.objectPath) return "";
   const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/+$/, "");
@@ -25,5 +31,5 @@ export function getStoragePublicUrl(ref: MediaUrlRef) {
 }
 
 export function resolvePublicMediaUrl(ref: MediaUrlRef, fallbackPath?: string | null) {
-  return getStoragePublicUrl(ref) || toPublicPath(fallbackPath);
+  return getLegacyPublicPath(ref) || getStoragePublicUrl(ref) || toPublicPath(fallbackPath);
 }

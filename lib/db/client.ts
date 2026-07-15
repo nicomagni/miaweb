@@ -8,13 +8,20 @@ const globalForDb = globalThis as typeof globalThis & {
 };
 
 function createClient() {
-  const connectionString = process.env.DATABASE_URL;
+  const connectionString =
+    process.env.DATABASE_URL ??
+    process.env.POSTGRES_URL_NON_POOLING ??
+    process.env.POSTGRES_URL ??
+    process.env.POSTGRES_PRISMA_URL;
 
   if (!connectionString) {
-    throw new Error("Missing DATABASE_URL. Add it to .env.local before using the database runtime.");
+    throw new Error(
+      "Missing database URL. Add DATABASE_URL or POSTGRES_URL to the environment before using the database runtime.",
+    );
   }
 
   return postgres(connectionString, {
+    max: 1,
     prepare: false,
   });
 }

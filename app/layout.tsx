@@ -4,7 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
-const siteUrl = "https://www.miahilados.com.ar";
+const siteUrl = "https://www.miahilados.com";
 
 const montserrat = Montserrat({
   subsets: ["latin"],

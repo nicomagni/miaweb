@@ -4,7 +4,7 @@ import { getPublishedCollectionsForPublic } from "@/lib/public-collections";
 import { getPublicProviders } from "@/lib/public-providers";
 import { loadLegacyHtml } from "@/lib/legacy-html";
 
-const siteUrl = "https://www.miahilados.com.ar";
+const siteUrl = "https://www.miahilados.com";
 
 const structuredData = {
   "@context": "https://schema.org",
