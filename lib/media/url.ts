@@ -20,7 +20,7 @@ function encodeObjectPath(path: string) {
 
 function getLegacyPublicPath(ref: MediaUrlRef) {
   if (ref.bucket !== "site-public" || !ref.objectPath?.startsWith("legacy/")) return "";
-  return toPublicPath(ref.objectPath.replace(/^legacy\/+/, ""));
+  return toPublicPath(`images/${ref.objectPath.replace(/^legacy\/+/, "")}`);
 }
 
 export function getStoragePublicUrl(ref: MediaUrlRef) {
