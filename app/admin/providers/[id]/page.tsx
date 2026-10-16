@@ -1,11 +1,12 @@
 import Link from "next/link";
+import { ProviderForm } from "@/components/admin/provider-form";
 import { eq } from "drizzle-orm";
 import { mediaAssets, providers } from "@/db/schema";
 import { MediaPicker } from "@/components/admin/media-picker";
 import { requireAdmin } from "@/lib/auth/admin";
 import { getDb } from "@/lib/db/client";
 import { getStoragePublicUrl } from "@/lib/media/url";
-import { updateProviderAction } from "../actions";
+import { updateProviderAction, deleteProviderAction } from "../actions";
 
 export default async function ProviderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin({ roles: ["superadmin", "sales"] });
@@ -47,11 +48,11 @@ export default async function ProviderDetailPage({ params }: { params: Promise<{
           </div>
         </div>
       ) : null}
-      <form action={updateProviderAction} className="admin-form admin-form--two-col">
+      <ProviderForm action={updateProviderAction} className="admin-form admin-form--two-col">
         <input type="hidden" name="id" value={provider.id} />
         <label className="admin-field">
           <span>Nombre</span>
-          <input name="name" defaultValue={provider.name} />
+          <input required minLength={2} name="name" defaultValue={provider.name} />
         </label>
         <label className="admin-field">
           <span>Tipo</span>
@@ -78,7 +79,7 @@ export default async function ProviderDetailPage({ params }: { params: Promise<{
         </label>
         <label className="admin-field">
           <span>Email</span>
-          <input name="email" defaultValue={provider.email ?? ""} />
+          <input type="email" name="email" defaultValue={provider.email ?? ""} />
         </label>
         <label className="admin-field">
           <span>Teléfono</span>
@@ -115,7 +116,7 @@ export default async function ProviderDetailPage({ params }: { params: Promise<{
         </label>
         <label className="admin-field">
           <span>Website</span>
-          <input name="website" defaultValue={provider.website ?? ""} />
+          <input type="url" name="website" defaultValue={provider.website ?? ""} />
         </label>
         <label className="admin-field">
           <span>Latitud</span>
@@ -137,7 +138,13 @@ export default async function ProviderDetailPage({ params }: { params: Promise<{
             Volver al listado
           </Link>
         </div>
-      </form>
+      </ProviderForm>
+      <ProviderForm action={deleteProviderAction} confirmDelete>
+        <input type="hidden" name="id" value={provider.id} />
+        <button className="admin-link-inline admin-link-inline--danger" type="submit">
+          Eliminar proveedor
+        </button>
+      </ProviderForm>
     </section>
   );
 }
