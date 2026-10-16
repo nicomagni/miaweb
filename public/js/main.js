@@ -25,8 +25,8 @@
             if("undefined"==typeof L)return;
             n=L.map("map",{
               center:[-38.4161,-63.6167],zoom:4,scrollWheelZoom:!1
-            }),L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",{
-              attribution:"&copy; OSM &copy; CARTO",subdomains:"abcd",maxZoom:19
+            }),L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{
+              attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',maxZoom:19
             }).addTo(n);
             function makeIcon(mayorista){
               var bg=mayorista?'#111111':'#DA291C';
