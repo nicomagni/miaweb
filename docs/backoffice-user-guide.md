@@ -25,7 +25,7 @@ El backoffice usa tres roles:
 | Rol          | Para qué se usa                                                                                             |
 | ------------ | ----------------------------------------------------------------------------------------------------------- |
 | `superadmin` | Administración completa. Puede gestionar usuarios, solicitudes, proveedores, colecciones, contacto y media. |
-| `sales`      | Gestión comercial. Puede trabajar con solicitudes comerciales, proveedores, mensajes de contacto y media.   |
+| `sales`      | Gestión comercial y de contenido. Suma colecciones y media a solicitudes, proveedores y contacto.           |
 | `editor`     | Gestión de contenido. Puede trabajar con colecciones y media.                                               |
 
 El menú muestra solamente las secciones permitidas para el rol activo. Si se intenta abrir manualmente una sección sin permiso, el sistema bloquea el acceso e informa que el rol no está autorizado.
@@ -191,6 +191,7 @@ Ruta:
 Disponible para:
 
 - `superadmin`
+- `sales`
 - `editor`
 
 Este módulo gestiona las colecciones de hilados que se muestran en el sitio público.

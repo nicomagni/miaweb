@@ -16,7 +16,7 @@ export default async function CollectionDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await requireAdmin({ roles: ["superadmin", "editor"] });
+  await requireAdmin({ roles: ["superadmin", "editor", "sales"] });
   const { id } = await params;
   const db = getDb();
   const collection = await db.query.collections.findFirst({

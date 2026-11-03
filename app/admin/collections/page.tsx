@@ -11,7 +11,7 @@ export default async function CollectionsPage({
 }: {
   searchParams: Promise<{ q?: string; status?: string }>;
 }) {
-  await requireAdmin({ roles: ["superadmin", "editor"] });
+  await requireAdmin({ roles: ["superadmin", "editor", "sales"] });
   const params = await searchParams;
   const q = (params.q ?? "").trim();
   const status = (params.status ?? "").trim();

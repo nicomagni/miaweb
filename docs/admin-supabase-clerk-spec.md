@@ -193,7 +193,7 @@ Compatibilidad:
 
 ### 3. Gestión de colecciones
 
-1. `editor` o `superadmin` crea o edita una colección
+1. `editor`, `sales` o `superadmin` crea o edita una colección
 2. selecciona assets desde `/admin/media`
 3. administra sus ítems
 4. publica la colección

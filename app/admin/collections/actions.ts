@@ -10,7 +10,7 @@ import { slugify } from "@/lib/utils/slug";
 import { collectionItemSchema, collectionSchema } from "@/lib/validations/collection";
 
 export async function createCollectionAction(formData: FormData) {
-  const adminUser = await requireAdmin({ roles: ["superadmin", "editor"] });
+  const adminUser = await requireAdmin({ roles: ["superadmin", "editor", "sales"] });
   const db = getDb();
   const parsed = collectionSchema.parse({
     name: String(formData.get("name") ?? ""),
@@ -53,7 +53,7 @@ export async function createCollectionAction(formData: FormData) {
 }
 
 export async function updateCollectionAction(formData: FormData) {
-  const adminUser = await requireAdmin({ roles: ["superadmin", "editor"] });
+  const adminUser = await requireAdmin({ roles: ["superadmin", "editor", "sales"] });
   const id = String(formData.get("id") ?? "");
   const parsed = collectionSchema.parse({
     name: String(formData.get("name") ?? ""),
@@ -96,7 +96,7 @@ export async function updateCollectionAction(formData: FormData) {
 }
 
 export async function createCollectionItemAction(formData: FormData) {
-  await requireAdmin({ roles: ["superadmin", "editor"] });
+  await requireAdmin({ roles: ["superadmin", "editor", "sales"] });
   const collectionId = String(formData.get("collectionId") ?? "");
   const parsed = collectionItemSchema.parse({
     name: String(formData.get("name") ?? ""),
@@ -126,7 +126,7 @@ export async function createCollectionItemAction(formData: FormData) {
 }
 
 export async function deleteCollectionItemAction(formData: FormData) {
-  await requireAdmin({ roles: ["superadmin", "editor"] });
+  await requireAdmin({ roles: ["superadmin", "editor", "sales"] });
   const id = String(formData.get("id") ?? "");
   const collectionId = String(formData.get("collectionId") ?? "");
 

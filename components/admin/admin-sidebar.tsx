@@ -25,7 +25,11 @@ const adminLinks: Array<{
   },
   { href: "/admin/contact-messages", label: "Contacto", roles: ["superadmin", "sales"] },
   { href: "/admin/providers", label: "Proveedores", roles: ["superadmin", "sales"] },
-  { href: "/admin/collections", label: "Colecciones", roles: ["superadmin", "editor"] },
+  {
+    href: "/admin/collections",
+    label: "Colecciones",
+    roles: ["superadmin", "editor", "sales"],
+  },
   { href: "/admin/media", label: "Media", roles: allRoles },
   { href: "/admin/users", label: "Usuarios", roles: ["superadmin"] },
 ];
