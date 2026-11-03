@@ -23,11 +23,11 @@ export async function requireAdmin(options: RequireAdminOptions = {}) {
   });
 
   if (!adminUser || !adminUser.isActive) {
-    redirect("/403");
+    redirect("/403?reason=inactive");
   }
 
   if (options.roles && !options.roles.includes(adminUser.role)) {
-    redirect("/403");
+    redirect("/403?reason=role");
   }
 
   return adminUser;

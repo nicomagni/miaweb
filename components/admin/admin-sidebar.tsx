@@ -10,14 +10,24 @@ type AdminSidebarProps = {
   role: AdminRole;
 };
 
-const adminLinks = [
-  { href: "/admin", label: "Resumen" },
-  { href: "/admin/wholesale-applications", label: "Solicitudes" },
-  { href: "/admin/contact-messages", label: "Contacto" },
-  { href: "/admin/providers", label: "Proveedores" },
-  { href: "/admin/collections", label: "Colecciones" },
-  { href: "/admin/media", label: "Media" },
-  { href: "/admin/users", label: "Usuarios" },
+const allRoles: AdminRole[] = ["superadmin", "editor", "sales"];
+
+const adminLinks: Array<{
+  href: string;
+  label: string;
+  roles: AdminRole[];
+}> = [
+  { href: "/admin", label: "Resumen", roles: allRoles },
+  {
+    href: "/admin/wholesale-applications",
+    label: "Solicitudes",
+    roles: ["superadmin", "sales"],
+  },
+  { href: "/admin/contact-messages", label: "Contacto", roles: ["superadmin", "sales"] },
+  { href: "/admin/providers", label: "Proveedores", roles: ["superadmin", "sales"] },
+  { href: "/admin/collections", label: "Colecciones", roles: ["superadmin", "editor"] },
+  { href: "/admin/media", label: "Media", roles: allRoles },
+  { href: "/admin/users", label: "Usuarios", roles: ["superadmin"] },
 ];
 
 export function AdminSidebar({ email, role }: AdminSidebarProps) {
@@ -33,21 +43,23 @@ export function AdminSidebar({ email, role }: AdminSidebarProps) {
       </div>
 
       <nav className="admin-sidebar__nav" aria-label="Navegación del admin">
-        {adminLinks.map((link) => {
-          const isActive =
-            link.href === "/admin" ? pathname === link.href : pathname.startsWith(link.href);
+        {adminLinks
+          .filter((link) => link.roles.includes(role))
+          .map((link) => {
+            const isActive =
+              link.href === "/admin" ? pathname === link.href : pathname.startsWith(link.href);
 
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              prefetch={false}
-              className={`admin-sidebar__link${isActive ? " is-active" : ""}`}
-            >
-              {link.label}
-            </Link>
-          );
-        })}
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                prefetch={false}
+                className={`admin-sidebar__link${isActive ? " is-active" : ""}`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
       </nav>
 
       <div className="admin-sidebar__user">

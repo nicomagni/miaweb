@@ -28,7 +28,7 @@ El backoffice usa tres roles:
 | `sales`      | Gestión comercial. Puede trabajar con solicitudes comerciales, proveedores, mensajes de contacto y media.   |
 | `editor`     | Gestión de contenido. Puede trabajar con colecciones y media.                                               |
 
-El menú puede mostrar más secciones que las permitidas para cada rol. Si se intenta abrir una sección sin permiso, el sistema bloquea el acceso.
+El menú muestra solamente las secciones permitidas para el rol activo. Si se intenta abrir manualmente una sección sin permiso, el sistema bloquea el acceso e informa que el rol no está autorizado.
 
 ## Resumen del panel
 
@@ -389,6 +389,7 @@ Este módulo administra quién tiene acceso al backoffice.
 - Ver el último ingreso.
 - Promover un usuario al backoffice.
 - Elegir el rol inicial: `sales`, `editor` o `superadmin`.
+- Cambiar el rol de un usuario que ya tiene acceso.
 - Reactivar un usuario admin inactivo al promoverlo nuevamente.
 
 ### Como dar acceso a una persona
@@ -399,6 +400,15 @@ Este módulo administra quién tiene acceso al backoffice.
 4. Elige el rol.
 5. Presiona `Promover`.
 6. La persona ya puede ingresar al panel con ese rol.
+
+### Como cambiar un rol
+
+1. Un `superadmin` entra a `Usuarios`.
+2. Busca a la persona en el listado.
+3. Selecciona el nuevo rol.
+4. Presiona `Guardar rol`.
+
+Un superadmin no puede quitarse su propio rol para evitar perder accidentalmente el acceso administrativo.
 
 ### Que no se puede hacer
 

@@ -34,7 +34,7 @@ export default async function AdminLayout({
   });
 
   if (!adminUser || !adminUser.isActive) {
-    redirect("/403");
+    redirect("/403?reason=inactive");
   }
 
   return (

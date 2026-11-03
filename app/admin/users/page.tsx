@@ -2,7 +2,7 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { adminUsers } from "@/db/schema";
 import { requireAdmin } from "@/lib/auth/admin";
 import { getDb } from "@/lib/db/client";
-import { promoteUserToAdminAction } from "./actions";
+import { saveAdminUserAccessAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -33,8 +33,8 @@ export default async function AdminUsersPage() {
         <p className="admin-eyebrow">Usuarios</p>
         <h1>Accesos del backoffice</h1>
         <p>
-          Listado de usuarios registrados en Clerk. Los superadmin pueden promover usuarios al panel
-          interno.
+          Listado de usuarios registrados en Clerk. Los superadmin pueden habilitar usuarios y
+          actualizar sus roles.
         </p>
       </section>
 
@@ -83,23 +83,27 @@ export default async function AdminUsersPage() {
                       )}
                     </td>
                     <td>
-                      {adminUser?.isActive ? (
-                        <span className="admin-muted">Ya tiene acceso</span>
-                      ) : (
-                        <form action={promoteUserToAdminAction} className="admin-inline-form">
-                          <input type="hidden" name="clerkUserId" value={user.id} />
-                          <input type="hidden" name="email" value={email} />
-                          <input type="hidden" name="fullName" value={fullName} />
-                          <select name="role" aria-label={`Rol para ${email}`} defaultValue="sales">
-                            <option value="sales">Sales</option>
-                            <option value="editor">Editor</option>
-                            <option value="superadmin">Superadmin</option>
-                          </select>
-                          <button className="admin-action-button" type="submit">
-                            Promover
-                          </button>
-                        </form>
-                      )}
+                      <form action={saveAdminUserAccessAction} className="admin-inline-form">
+                        <input type="hidden" name="clerkUserId" value={user.id} />
+                        <input type="hidden" name="email" value={email} />
+                        <input type="hidden" name="fullName" value={fullName} />
+                        <select
+                          name="role"
+                          aria-label={`Rol para ${email}`}
+                          defaultValue={adminUser?.role ?? "sales"}
+                        >
+                          <option value="sales">Sales</option>
+                          <option value="editor">Editor</option>
+                          <option value="superadmin">Superadmin</option>
+                        </select>
+                        <button className="admin-action-button" type="submit">
+                          {adminUser?.isActive
+                            ? "Guardar rol"
+                            : adminUser
+                              ? "Reactivar"
+                              : "Promover"}
+                        </button>
+                      </form>
                     </td>
                   </tr>
                 );
