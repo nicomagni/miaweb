@@ -18,9 +18,10 @@ function encodeObjectPath(path: string) {
     .join("/");
 }
 
-function getLegacyPublicPath(ref: MediaUrlRef) {
+function getLegacyPublicPath(ref: MediaUrlRef, originalPath?: string | null) {
   if (ref.bucket !== "site-public" || !ref.objectPath?.startsWith("legacy/")) return "";
-  return toPublicPath(`images/${ref.objectPath.replace(/^legacy\/+/, "")}`);
+  // Storage names are sanitized and cannot reconstruct the original public filename.
+  return toPublicPath(originalPath);
 }
 
 export function getStoragePublicUrl(ref: MediaUrlRef) {
@@ -31,5 +32,7 @@ export function getStoragePublicUrl(ref: MediaUrlRef) {
 }
 
 export function resolvePublicMediaUrl(ref: MediaUrlRef, fallbackPath?: string | null) {
-  return getLegacyPublicPath(ref) || getStoragePublicUrl(ref) || toPublicPath(fallbackPath);
+  return (
+    getLegacyPublicPath(ref, fallbackPath) || getStoragePublicUrl(ref) || toPublicPath(fallbackPath)
+  );
 }
