@@ -93,6 +93,13 @@ Reglas:
 - Drizzle registra qué migraciones ya corrieron en `public.__drizzle_migrations`, por lo que no vuelve a aplicar una migración ya ejecutada;
 - si una migración falla, el deploy debe fallar y no publicar una build contra un schema desactualizado.
 
+`db:migrate:deploy` ejecuta `scripts/migrate-deploy.mjs` con el migrador de Drizzle ORM,
+las mismas migraciones de `drizzle/` y el mismo historial `public.__drizzle_migrations`.
+Primero comprueba la conexión con `SELECT 1`. Si falla, registra la etapa
+(`configuration`, `connection` o `migration`), el código y la causa del error,
+sin imprimir credenciales, consultas completas ni parámetros. Esto evita que
+el indicador de progreso de Drizzle Kit oculte el error en los logs de Vercel.
+
 ## Convención recomendada
 
 ### En desarrollo

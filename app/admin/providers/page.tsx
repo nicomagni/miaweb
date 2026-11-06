@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ProviderForm } from "@/components/admin/provider-form";
 import { and, desc, eq, ilike, or } from "drizzle-orm";
 import { providers } from "@/db/schema";
 import { MediaPicker } from "@/components/admin/media-picker";
@@ -47,10 +48,10 @@ export default async function ProvidersPage({
     <div className="admin-stack">
       <section className="admin-card">
         <p className="admin-eyebrow">Nuevo proveedor</p>
-        <form action={createProviderAction} className="admin-form admin-form--two-col">
+        <ProviderForm action={createProviderAction} className="admin-form admin-form--two-col">
           <label className="admin-field">
             <span>Nombre</span>
-            <input name="name" />
+            <input required minLength={2} name="name" />
           </label>
           <label className="admin-field">
             <span>Tipo</span>
@@ -72,7 +73,7 @@ export default async function ProvidersPage({
           </label>
           <label className="admin-field">
             <span>Email</span>
-            <input name="email" />
+            <input type="email" name="email" />
           </label>
           <label className="admin-field">
             <span>Teléfono</span>
@@ -109,7 +110,7 @@ export default async function ProvidersPage({
           </label>
           <label className="admin-field">
             <span>Website</span>
-            <input name="website" />
+            <input type="url" name="website" />
           </label>
           <label className="admin-field">
             <span>Latitud</span>
@@ -126,7 +127,7 @@ export default async function ProvidersPage({
           <button className="admin-submit-button" type="submit">
             Crear proveedor
           </button>
-        </form>
+        </ProviderForm>
       </section>
       <section className="admin-card">
         <p className="admin-eyebrow">Base de proveedores</p>
